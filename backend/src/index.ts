@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 import authRoutes from './routes/auth.js';
 import loanRoutes from './routes/loan.js';
+import job from 'utils/cron.js';
 
 dotenv.config();
 
@@ -31,7 +32,7 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
   console.error(err.stack);
   res.status(500).json({ error: 'Something went wrong!' });
 });
-
+job.start();
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(5000, '0.0.0.0', () => {
