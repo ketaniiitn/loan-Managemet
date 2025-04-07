@@ -34,9 +34,10 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
 
 // Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+app.listen(3000, '0.0.0.0', () => {
+  console.log("Server running on port 5000");
 });
+
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
