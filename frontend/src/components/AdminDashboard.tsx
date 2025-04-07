@@ -3,6 +3,7 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import axios from "axios"
 import { useRouter } from "next/navigation";
+import Image from 'next/image';
 interface LoanApplication {
   id: string
   activity: string
@@ -149,7 +150,13 @@ const AdminDashboard: React.FC = () => {
             </button>
             <div className="flex items-center space-x-2">
               <span className="text-black">Admin</span>
-              <img src="https://via.placeholder.com/40" alt="Admin Avatar" className="w-10 h-10 rounded-full" />
+              <Image
+  src="https://via.placeholder.com/40"
+  alt="Verifier Avatar"
+  width={40}
+  height={40}
+  className="rounded-full"
+/>
             </div>
           </div>
         </header>

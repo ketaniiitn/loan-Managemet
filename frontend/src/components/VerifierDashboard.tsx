@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
+import Image from 'next/image';
 interface LoanApplication {
   id: string;
   activity: string;
@@ -114,11 +114,13 @@ const VerifierDashboard: React.FC = () => {
             <button className="bg-gray-200 p-2 rounded-full">🔔</button>
             <div className="flex items-center space-x-2">
               <span>Verifier</span>
-              <img
-                src="https://via.placeholder.com/40"
-                alt="Verifier Avatar"
-                className="w-10 h-10 rounded-full"
-              />
+              <Image
+  src="https://via.placeholder.com/40"
+  alt="Verifier Avatar"
+  width={40}
+  height={40}
+  className="rounded-full"
+/>
             </div>
           </div>
         </header>

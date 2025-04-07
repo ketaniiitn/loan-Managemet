@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { jwtDecode } from "jwt-decode";
-import LoanApplicationForm from "@/components/LoanApplication";
 import AdminPage from "./admin/page";
 import LoginPage from "./login/page";
 import UserPage from "./user/page";
