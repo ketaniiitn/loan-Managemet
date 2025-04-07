@@ -29,7 +29,7 @@ const VerifierDashboard: React.FC = () => {
     if (!token) return;
 
     try {
-      const response = await axios.get("http://34.45.133.198/api/loan/all", {
+      const response = await axios.get("https://loan-management-lpsh.onrender.com/api/loan/all", {
         params: { role: "VERIFIER" },
         headers: {
           Authorization: `Bearer ${token}`,
@@ -65,7 +65,7 @@ const VerifierDashboard: React.FC = () => {
       );
 
       await axios.put(
-        `http://34.45.133.198/api/loan/${id}/status`,
+        `https://loan-management-lpsh.onrender.com/api/loan/${id}/status`,
         { status: newStatus },
         {
           headers: {

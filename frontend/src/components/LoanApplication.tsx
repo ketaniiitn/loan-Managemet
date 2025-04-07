@@ -55,7 +55,7 @@ const LoanApplicationForm: React.FC = () => {
       const token = localStorage.getItem("token");
 
       const res = await axios.post(
-        "http://34.45.133.198/api/loan/create",
+        "https://loan-management-lpsh.onrender.com/api/loan/create",
         payload,
         { withCredentials: true ,
         

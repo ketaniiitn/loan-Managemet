@@ -59,7 +59,7 @@ const LoginRegister: React.FC = () => {
 
     try {
       const response = await axios.post(endpoint, payload, {
-        baseURL: "http://34.45.133.198",
+        baseURL: "https://loan-management-lpsh.onrender.com",
         withCredentials: true,
       });
 
