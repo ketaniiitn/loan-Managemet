@@ -24,13 +24,14 @@ export const authenticateToken = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
-      return res.status(401).json({ message: 'Authentication required' });
+      res.status(401).json({ message: 'Authentication required' });
+      return;
     }
 
     const decoded = jwt.verify(
@@ -43,12 +44,14 @@ export const authenticateToken = async (
     });
 
     if (!user) {
-      return res.status(401).json({ message: 'User not found' });
+      res.status(401).json({ message: 'User not found' });
+      return;
     }
 
     req.user = { id: user.id, role: user.role };
     next();
   } catch (error) {
-    return res.status(403).json({ message: 'Invalid token' });
+    res.status(403).json({ message: 'Invalid token' });
+    return;
   }
 };

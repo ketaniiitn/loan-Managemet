@@ -1,4 +1,3 @@
-// backend/controllers/loanController.ts
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 
@@ -7,12 +6,15 @@ const prisma = new PrismaClient();
 /**
  * Create a new loan application
  */
-export const createLoanApplication = async (req: Request, res: Response) => {
+export const createLoanApplication = async (req: Request, res: Response): Promise<void> => {
   try {
     const { amount, purpose } = req.body;
     const userId = req.user?.id;
 
-    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
 
     const loan = await prisma.loanApplication.create({
       data: {
@@ -22,89 +24,85 @@ export const createLoanApplication = async (req: Request, res: Response) => {
       },
     });
 
-    return res.status(201).json({ message: "Loan application created", loan });
+    res.status(201).json({ message: "Loan application created", loan });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Error creating loan application" });
+    res.status(500).json({ message: "Error creating loan application" });
   }
 };
 
 /**
  * Get all loan applications (based on user role)
  */
-export const getLoanApplications = async (req: Request, res: Response) => {
+export const getLoanApplications = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = req.user?.id;
     const role = req.user?.role;
-    console.log(role);
+
     if (!userId || !role) {
-      return res.status(401).json({ message: "Unauthorized" });
+      res.status(401).json({ message: "Unauthorized" });
+      return;
     }
 
     let loans;
 
     if (role === "ADMIN") {
       loans = await prisma.loanApplication.findMany({
-        include: {
-          user: true,
-          verifier: true,
-          approver: true,
-        },
+        include: { user: true, verifier: true, approver: true },
       });
     } else if (role === "VERIFIER") {
       loans = await prisma.loanApplication.findMany({
         where: {
-          OR: [
-            { verifierId: userId },
-            { status: "PENDING" }
-          ]
+          OR: [{ verifierId: userId }, { status: "PENDING" }],
         },
-        include: {
-          user: true,
-        },
+        include: { user: true },
       });
     } else {
       loans = await prisma.loanApplication.findMany({
         where: { userId },
-        include: {
-          verifier: true,
-          approver: true,
-        },
+        include: { verifier: true, approver: true },
       });
     }
 
-    return res.status(200).json({ loans });
+    res.status(200).json({ loans });
   } catch (error) {
     console.error("Error fetching loans:", error);
-    return res.status(500).json({ message: "Error fetching loan applications" });
+    res.status(500).json({ message: "Error fetching loan applications" });
   }
 };
-// Get user by role
-export const getUsersByRole = async (req: Request, res: Response) => {
+
+/**
+ * Get users by role
+ */
+export const getUsersByRole = async (req: Request, res: Response): Promise<void> => {
   try {
     const admins = await prisma.user.findMany({
       where: { role: "ADMIN" },
-      select: { id: true, name: true, email: true, role: true }
+      select: { id: true, name: true, email: true, role: true },
     });
 
     const verifiers = await prisma.user.findMany({
       where: { role: "VERIFIER" },
-      select: { id: true, name: true, email: true, role: true }
+      select: { id: true, name: true, email: true, role: true },
     });
 
-    return res.status(200).json({ admins, verifiers });
+    res.status(200).json({ admins, verifiers });
   } catch (error) {
     console.error("Error fetching users:", error);
-    return res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error" });
   }
 };
-// Update User role 
-export const updateUserRole = async (req: Request, res: Response) => {
+
+/**
+ * Update user role
+ */
+export const updateUserRole = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
   const { role } = req.body;
 
   if (!["ADMIN", "VERIFIER"].includes(role)) {
-    return res.status(400).json({ message: "Invalid role" });
+    res.status(400).json({ message: "Invalid role" });
+    return;
   }
 
   try {
@@ -113,39 +111,40 @@ export const updateUserRole = async (req: Request, res: Response) => {
       data: { role },
     });
 
-    return res.status(200).json({ message: "Role updated", user: updatedUser });
+    res.status(200).json({ message: "Role updated", user: updatedUser });
   } catch (error) {
     console.error("Error updating role:", error);
-    return res.status(500).json({ message: "Could not update user role" });
+    res.status(500).json({ message: "Could not update user role" });
   }
 };
 
-
-// Delete User by role 
-export const deleteUser = async (req: Request, res: Response) => {
+/**
+ * Delete user
+ */
+export const deleteUser = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
 
   try {
     await prisma.user.delete({ where: { id } });
-    return res.status(200).json({ message: "User deleted successfully" });
+    res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     console.error("Error deleting user:", error);
-    return res.status(500).json({ message: "Could not delete user" });
+    res.status(500).json({ message: "Could not delete user" });
   }
 };
-
 
 /**
  * Verifier: Verify a loan application
  */
-export const verifyLoanApplication = async (req: Request, res: Response) => {
+export const verifyLoanApplication = async (req: Request, res: Response): Promise<void> => {
   try {
     const loanId = req.params.id;
     const userId = req.user?.id;
     const role = req.user?.role;
 
     if (role !== "VERIFIER") {
-      return res.status(403).json({ message: "Only verifiers can verify applications" });
+      res.status(403).json({ message: "Only verifiers can verify applications" });
+      return;
     }
 
     const updatedLoan = await prisma.loanApplication.update({
@@ -156,24 +155,25 @@ export const verifyLoanApplication = async (req: Request, res: Response) => {
       },
     });
 
-    return res.status(200).json({ message: "Loan application verified", loan: updatedLoan });
+    res.status(200).json({ message: "Loan application verified", loan: updatedLoan });
   } catch (error) {
     console.error("Error verifying loan:", error);
-    return res.status(500).json({ message: "Error verifying loan application" });
+    res.status(500).json({ message: "Error verifying loan application" });
   }
 };
 
 /**
  * Verifier: Reject a loan application
  */
-export const rejectLoanApplication = async (req: Request, res: Response) => {
+export const rejectLoanApplication = async (req: Request, res: Response): Promise<void> => {
   try {
     const loanId = req.params.id;
     const userId = req.user?.id;
     const role = req.user?.role;
 
     if (role !== "VERIFIER") {
-      return res.status(403).json({ message: "Only verifiers can reject applications" });
+      res.status(403).json({ message: "Only verifiers can reject applications" });
+      return;
     }
 
     const updatedLoan = await prisma.loanApplication.update({
@@ -184,46 +184,50 @@ export const rejectLoanApplication = async (req: Request, res: Response) => {
       },
     });
 
-    return res.status(200).json({ message: "Loan application rejected", loan: updatedLoan });
+    res.status(200).json({ message: "Loan application rejected", loan: updatedLoan });
   } catch (error) {
     console.error("Error rejecting loan:", error);
-    return res.status(500).json({ message: "Error rejecting loan application" });
+    res.status(500).json({ message: "Error rejecting loan application" });
   }
 };
 
-export const updateLoanStatus = async (req: Request, res: Response) => {
+/**
+ * Admin/Verifier: Update loan status
+ */
+export const updateLoanStatus = async (req: Request, res: Response): Promise<void> => {
   try {
     const loanId = req.params.id;
     const userId = req.user?.id;
     const role = req.user?.role;
     const { status } = req.body;
-   console.log(role, status)
-    // Validate status input
+
     const validStatuses = ["PENDING", "VERIFIED", "APPROVED", "REJECTED"];
     if (!validStatuses.includes(status)) {
-      return res.status(400).json({ message: "Invalid status provided." });
+      res.status(400).json({ message: "Invalid status provided." });
+      return;
     }
 
-    // Optional: Define role-specific permission logic
     if (role === "VERIFIER" && status === "APPROVED") {
-      return res.status(403).json({ message: "Verifier cannot approve loans." });
+      res.status(403).json({ message: "Verifier cannot approve loans." });
+      return;
     }
 
     if (role !== "VERIFIER" && role !== "ADMIN") {
-      return res.status(403).json({ message: "Unauthorized role." });
+      res.status(403).json({ message: "Unauthorized role." });
+      return;
     }
 
     const updatedLoan = await prisma.loanApplication.update({
       where: { id: loanId },
       data: {
         status,
-        verifierId: role === "VERIFIER" ? userId : undefined, // only set if VERIFIER
+        verifierId: role === "VERIFIER" ? userId : undefined,
       },
     });
 
-    return res.status(200).json({ message: `Loan application marked as ${status}`, loan: updatedLoan });
+    res.status(200).json({ message: `Loan application marked as ${status}`, loan: updatedLoan });
   } catch (error) {
     console.error("Error updating loan status:", error);
-    return res.status(500).json({ message: "Failed to update loan status" });
+    res.status(500).json({ message: "Failed to update loan status" });
   }
 };
