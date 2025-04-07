@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 import authRoutes from './routes/auth.js';
 import loanRoutes from './routes/loan.js';
-import job from 'utils/cron.js';
+import job from './utils/cron.js';
 
 dotenv.config();
 
