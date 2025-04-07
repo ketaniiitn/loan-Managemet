@@ -13,9 +13,7 @@
     "paths": {
       "*": ["src/*"]
     },
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
+    "moduleResolution": "node"
   },
   "include": ["src"]
 }
