@@ -13,7 +13,7 @@ const prisma = new PrismaClient();
 
 // Middleware
 app.use(cors({
-  origin: ['loan-managemet.vercel.app','loan-managemet-git-main-ketan-bajpais-projects.vercel.app'],
+  origin: ['https://loan-managemet.vercel.app','https://loan-managemet-git-main-ketan-bajpais-projects.vercel.app'],
   credentials: true,
 }));
 app.use(express.json());
