@@ -1,0 +1,58 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  VERIFIER
+  USER
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  name          String
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  applications  LoanApplication[] @relation("UserApplications")
+  verifiedLoans LoanApplication[] @relation("VerifiedBy")
+  approvedLoans LoanApplication[] @relation("ApprovedBy")
+}
+
+model LoanApplication {
+  id          String    @id @default(uuid())
+  amount      Float
+  purpose     String
+  status      Status    @default(PENDING)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // User who created the application
+  userId      String
+  user        User      @relation("UserApplications", fields: [userId], references: [id])
+  
+  // Verification details
+  verifierId  String?
+  verifier    User?     @relation("VerifiedBy", fields: [verifierId], references: [id])
+  verifiedAt  DateTime?
+ 
+  // Approval details
+  approverId  String?
+  approver    User?     @relation("ApprovedBy", fields: [approverId], references: [id])
+  approvedAt  DateTime?
+}
+
+enum Status {
+  PENDING
+  VERIFIED
+  REJECTED
+  APPROVED
+  DECLINED
+}
