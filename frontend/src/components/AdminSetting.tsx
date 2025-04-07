@@ -21,7 +21,7 @@ const AdminSetting: React.FC = () => {
 
     const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/loan/users/by-role", {
+        const res = await axios.get("http://34.45.133.198/api/loan/users/by-role", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -48,7 +48,7 @@ const AdminSetting: React.FC = () => {
 
     try {
       await axios.put(
-        `http://localhost:5000/api/loan/users/${id}/role`,
+        `http://34.45.133.198/api/loan/users/${id}/role`,
         { role: "ADMIN" },
         {
           headers: {
@@ -68,7 +68,7 @@ const AdminSetting: React.FC = () => {
     if (!token) return
 
     try {
-      await axios.delete(`http://localhost:5000/api/loan/users/${id}`, {
+      await axios.delete(`http://34.45.133.198/api/loan/users/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

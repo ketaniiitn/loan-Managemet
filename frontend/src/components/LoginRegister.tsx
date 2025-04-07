@@ -59,7 +59,7 @@ const LoginRegister: React.FC = () => {
 
     try {
       const response = await axios.post(endpoint, payload, {
-        baseURL: "http://localhost:5000",
+        baseURL: "http://34.45.133.198",
         withCredentials: true,
       });
 

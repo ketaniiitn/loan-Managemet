@@ -20,7 +20,7 @@ const UserDashboard: React.FC = () => {
     const fetchApplications = async () => {
       try {
         const token = localStorage.getItem("token"); // JWT stored after login
-        const response = await fetch("http://localhost:5000/api/loan/all",  {
+        const response = await fetch("http://34.45.133.198/api/loan/all",  {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
