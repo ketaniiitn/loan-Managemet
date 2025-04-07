@@ -1,7 +1,8 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import Image from 'next/image';
+import Image from "next/image";
+
 interface LoanApplication {
   id: string;
   activity: string;
@@ -24,7 +25,7 @@ const VerifierDashboard: React.FC = () => {
     }
   }, []);
 
-  const fetchApplications = async () => {
+  const fetchApplications = useCallback(async () => {
     if (!token) return;
 
     try {
@@ -45,11 +46,11 @@ const VerifierDashboard: React.FC = () => {
     } catch (error) {
       console.error("Error fetching applications:", error);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     fetchApplications();
-  }, [token]);
+  }, [fetchApplications]);
 
   const handleStatusChange = async (id: string, newStatus: string) => {
     if (!token) {
@@ -60,9 +61,7 @@ const VerifierDashboard: React.FC = () => {
     try {
       // Optimistically update UI
       setApplications((prev) =>
-        prev.map((app) =>
-          app.id === id ? { ...app, status: newStatus } : app
-        )
+        prev.map((app) => (app.id === id ? { ...app, status: newStatus } : app))
       );
 
       await axios.put(
@@ -93,16 +92,30 @@ const VerifierDashboard: React.FC = () => {
         <div className="p-4 text-center font-bold text-xl">CREDIT APP</div>
         <nav className="flex-1">
           <ul className="space-y-2 p-4">
-            <li className="hover:bg-green-700 p-2 rounded"><a href="#">Dashboard</a></li>
-            <li className="hover:bg-green-700 p-2 rounded"><a href="#">Borrowers</a></li>
-            <li className="hover:bg-green-700 p-2 rounded"><a href="#">Loans</a></li>
-            <li className="hover:bg-green-700 p-2 rounded"><a href="#">Repayments</a></li>
-            <li className="hover:bg-green-700 p-2 rounded"><a href="#">Reports</a></li>
-            <li className="hover:bg-green-700 p-2 rounded"><a href="#">Settings</a></li>
+            <li className="hover:bg-green-700 p-2 rounded">
+              <a href="#">Dashboard</a>
+            </li>
+            <li className="hover:bg-green-700 p-2 rounded">
+              <a href="#">Borrowers</a>
+            </li>
+            <li className="hover:bg-green-700 p-2 rounded">
+              <a href="#">Loans</a>
+            </li>
+            <li className="hover:bg-green-700 p-2 rounded">
+              <a href="#">Repayments</a>
+            </li>
+            <li className="hover:bg-green-700 p-2 rounded">
+              <a href="#">Reports</a>
+            </li>
+            <li className="hover:bg-green-700 p-2 rounded">
+              <a href="#">Settings</a>
+            </li>
           </ul>
         </nav>
         <div className="p-4">
-          <button className="w-full bg-red-600 hover:bg-red-700 p-2 rounded">Sign Out</button>
+          <button className="w-full bg-red-600 hover:bg-red-700 p-2 rounded">
+            Sign Out
+          </button>
         </div>
       </aside>
 
@@ -115,12 +128,12 @@ const VerifierDashboard: React.FC = () => {
             <div className="flex items-center space-x-2">
               <span>Verifier</span>
               <Image
-  src="https://via.placeholder.com/40"
-  alt="Verifier Avatar"
-  width={40}
-  height={40}
-  className="rounded-full"
-/>
+                src="https://via.placeholder.com/40"
+                alt="Verifier Avatar"
+                width={40}
+                height={40}
+                className="rounded-full"
+              />
             </div>
           </div>
         </header>
@@ -182,7 +195,11 @@ const VerifierDashboard: React.FC = () => {
                               : app.status === "VERIFIED"
                               ? "bg-green-100 text-green-800"
                               : "bg-red-100 text-red-800"
-                          } ${!isActionable ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
+                          } ${
+                            !isActionable
+                              ? "cursor-not-allowed opacity-60"
+                              : "cursor-pointer"
+                          }`}
                         >
                           {app.status}
                         </button>

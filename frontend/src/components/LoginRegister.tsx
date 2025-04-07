@@ -1,12 +1,28 @@
 "use client";
 import React, { useState } from "react";
 import axios from "axios";
-import { useRouter } from "next/navigation"; // ✅ for navigation
+import { useRouter } from "next/navigation";
+
+// Types
+interface AuthPayload {
+  email: string;
+  password: string;
+  role: "USER" | "ADMIN" | "VERIFIER";
+  name?: string;
+}
+
+interface FormData {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  role: "USER" | "ADMIN" | "VERIFIER";
+}
 
 const LoginRegister: React.FC = () => {
   const router = useRouter();
   const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
     password: "",
@@ -32,7 +48,8 @@ const LoginRegister: React.FC = () => {
     }
 
     const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
-    const payload: any = {
+
+    const payload: AuthPayload = {
       email: formData.email,
       password: formData.password,
       role: formData.role,
@@ -48,13 +65,12 @@ const LoginRegister: React.FC = () => {
 
       alert(response.data.message || "Success!");
 
-      
       const token = response.data.token;
       if (token) {
         localStorage.setItem("token", token);
       }
 
-      // ✅ Redirect based on role
+      // Redirect based on role
       switch (formData.role) {
         case "USER":
           router.push("/user");
@@ -68,9 +84,14 @@ const LoginRegister: React.FC = () => {
         default:
           router.push("/");
       }
-    } catch (err: any) {
-      console.error(err.response?.data || err.message);
-      alert(err.response?.data?.message || "Something went wrong");
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        console.error(err.response?.data || err.message);
+        alert(err.response?.data?.message || "Something went wrong");
+      } else {
+        console.error("Unexpected error", err);
+        alert("Something went wrong");
+      }
     }
   };
 
@@ -107,6 +128,7 @@ const LoginRegister: React.FC = () => {
 
           <input
             name="email"
+            type="email"
             placeholder="Email"
             value={formData.email}
             onChange={handleChange}

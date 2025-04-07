@@ -68,10 +68,16 @@ const LoanApplicationForm: React.FC = () => {
       alert("Loan application submitted successfully!");
       console.log("Backend Response:", res.data);
       router.push("/user");
-    } catch (error: any) {
-      console.error("Submission error:", error);
-      alert(error.response?.data?.message || "Submission failed.");
+    }  catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error("Submission error:", error);
+        alert(error.response?.data?.message || "Submission failed.");
+      } else {
+        console.error("Unexpected error:", error);
+        alert("An unexpected error occurred.");
+      }
     }
+    
   };
 
   return (

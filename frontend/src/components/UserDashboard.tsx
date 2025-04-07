@@ -1,6 +1,6 @@
 'use client'; // 👈 required for client-side navigation
 import React from "react";
-
+import Image from 'next/image';
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
@@ -34,13 +34,24 @@ const UserDashboard: React.FC = () => {
         }
   
         const data = await response.json();
-        const formatted = data.loans.map((loan: any) => ({
+        interface LoanAPIResponse {
+          id: string;
+          amount: number;
+          createdAt: string;
+          status: string;
+          verifier?: {
+            name?: string;
+          };
+        }
+        
+        const formatted = data.loans.map((loan: LoanAPIResponse): LoanApplication => ({
           id: loan.id,
           amount: loan.amount,
           dateApplied: new Date(loan.createdAt).toLocaleDateString(),
           status: loan.status,
           loanOfficer: loan.verifier?.name || "N/A",
         }));
+        
         setApplications(formatted);
       } catch (error) {
         console.error("Error fetching applications:", error);
@@ -75,11 +86,15 @@ const UserDashboard: React.FC = () => {
             </button>
             <div className="flex items-center space-x-2">
               <span>User</span>
-              <img
-                src="https://via.placeholder.com/40"
-                alt="User Avatar"
-                className="w-10 h-10 rounded-full"
-              />
+              
+
+<Image
+  src="https://via.placeholder.com/40"
+  alt="Verifier Avatar"
+  width={40}
+  height={40}
+  className="rounded-full"
+/>
             </div>
           </div>
         </header>
