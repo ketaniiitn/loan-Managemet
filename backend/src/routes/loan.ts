@@ -9,8 +9,8 @@ import {
   getUsersByRole,
   updateUserRole,
   deleteUser
-} from "../controllers/loanController";
-import { authenticateToken } from "../middleware/auth";
+} from "../controllers/loanController.js";
+import { authenticateToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
